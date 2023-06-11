@@ -7,6 +7,8 @@ import com.github.heroictrio.models.gameboard.heroes.Wizard;
 import com.github.heroictrio.repositories.GameboardObjectRepository;
 import com.github.heroictrio.services.RandomGeneratorService;
 import com.github.heroictrio.utilities.Constants;
+import com.github.heroictrio.utilities.Position;
+import com.github.heroictrio.validators.Input;
 import jakarta.enterprise.context.ApplicationScoped;
 
 @ApplicationScoped
@@ -52,7 +54,22 @@ public class HeroesService {
     game.setWizard(wizard);
   }
 
-  public void move(Long gameId, char heroPick, char direction) {
+  public void handleAction(Game game, Input input) {
+
+    boolean isMovement = input.getAction().equals("movemenet");
+
+    if (isMovement) {
+      move(game.getId(), input);
+      return;
+    }
+
+    ability(game, input);
+  }
+
+  private void move(Long gameId, Input input) {
+
+    char heroPick = input.getHeroPick().charAt(0);
+    char direction = input.getDirection().charAt(0);
 
     switch (heroPick) {
 
@@ -64,9 +81,42 @@ public class HeroesService {
     }
   }
 
-  public void ability(Game game, char direction, byte numberOfSquares) {
+  private void ability(Game game, Input input) {
 
-    gnomeService.ability(game, direction, numberOfSquares);
-    // wizardService.ability(gameId, positionOne, positionTwo, isAscending);
+    char heroPick = input.getHeroPick().charAt(0);
+
+    switch (heroPick) {
+
+      case Constants.GNOME_PICK: {
+
+        char direction = input.getDirection().charAt(0);
+        byte numberOfSquares = input.getNumberOfSquares();
+
+        gnomeService.ability(game, direction, numberOfSquares);
+        break;
+      }
+
+      case Constants.DWARF_PICK: {
+
+        Position positionOne = new Position(input.getRowOne(), input.getColOne());
+        Position positionTwo = new Position(input.getRowTwo(), input.getColTwo());
+
+        dwarfService.ability(game.getId(), positionOne, positionTwo);
+        break;
+      }
+
+      case Constants.WIZARD_PICK: {
+
+        Position positionOne = new Position(input.getRowOne(), input.getColOne());
+        Position positionTwo = new Position(input.getRowTwo(), input.getColTwo());
+        boolean isAscending = input.getSortType().equals("ascending");
+
+        wizardService.ability(game.getId(), positionOne, positionTwo, isAscending);
+        break;
+      }
+
+      default:
+        throw new IllegalArgumentException("Unexpected value: " + heroPick);
+    }
   }
 }

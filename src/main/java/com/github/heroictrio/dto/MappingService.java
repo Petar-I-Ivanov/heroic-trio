@@ -2,6 +2,7 @@ package com.github.heroictrio.dto;
 
 import com.github.heroictrio.models.Game;
 import com.github.heroictrio.services.GameService;
+import com.github.heroictrio.validators.Input;
 import jakarta.enterprise.context.ApplicationScoped;
 
 @ApplicationScoped
@@ -21,8 +22,8 @@ public class MappingService {
     return convertGameToDto(gameService.findGameById(gameId));
   }
 
-  public GameDTO makeAction(Long gameId, char heroPick, char direction) {
-    return convertGameToDto(gameService.makeAction(gameId, heroPick, direction));
+  public GameDTO makeAction(Long gameId, Input input) {
+    return convertGameToDto(gameService.makeAction(gameId, input));
   }
 
   private GameDTO convertGameToDto(Game game) {

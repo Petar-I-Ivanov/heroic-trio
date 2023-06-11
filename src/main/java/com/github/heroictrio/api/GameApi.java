@@ -2,7 +2,7 @@ package com.github.heroictrio.api;
 
 import com.github.heroictrio.dto.GameDTO;
 import com.github.heroictrio.dto.MappingService;
-import com.github.heroictrio.validator.Input;
+import com.github.heroictrio.validators.Input;
 import jakarta.validation.Valid;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.GET;
@@ -38,17 +38,6 @@ public class GameApi {
   @PUT
   @Path("/{gameId}")
   public GameDTO makeAction(@PathParam("gameId") Long gameId, @Valid Input input) {
-
-    // TODO: move/ability
-    // TODO: heroPick
-    // TODO: if move -> direction
-    // TODO: if ability and wizard -> {row, col} x 2 + isAscending
-    // TODO: if ability and gnome -> direction + numberOfRows (2 or 3)
-    // TODO: if ability and dwarf -> {row, col} x 2
-
-    char heroPick = input.getHeroPick().charAt(0);
-    char direction = input.getDirection().charAt(0);
-
-    return mappingService.makeAction(gameId, heroPick, direction);
+    return mappingService.makeAction(gameId, input);
   }
 }

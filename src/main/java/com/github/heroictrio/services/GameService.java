@@ -7,6 +7,7 @@ import com.github.heroictrio.repositories.GameboardObjectRepository;
 import com.github.heroictrio.services.heroes.HeroesService;
 import com.github.heroictrio.utilities.Constants;
 import com.github.heroictrio.utilities.Position;
+import com.github.heroictrio.validators.Input;
 import jakarta.enterprise.context.ApplicationScoped;
 
 @ApplicationScoped
@@ -44,13 +45,10 @@ public class GameService {
     return game;
   }
 
-  public Game makeAction(Long gameId, char heroPick, char direction) {
+  public Game makeAction(Long gameId, Input input) {
 
     Game game = findGameById(gameId);
-
-    heroesService.ability(game, direction, (byte) 2);
-    // heroesService.ability(gameId, new Position(0, 8), new Position(11, 8), false);
-    // heroesService.move(gameId, heroPick, direction);
+    heroesService.handleAction(game, input);
     return game;
   }
 
