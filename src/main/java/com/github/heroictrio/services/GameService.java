@@ -49,7 +49,27 @@ public class GameService {
 
     Game game = findGameById(gameId);
     heroesService.handleAction(game, input);
+
+    if (isTurnOver(gameId)) {
+
+      game.setTurn((short) (game.getTurn() + 1));
+      gameRepository.save(game);
+      heroesService.newTurn(gameId);
+    }
+
     return game;
+  }
+
+  public boolean isGnomeUsed(Long gameId) {
+    return heroesService.isGnomeUsed(gameId);
+  }
+
+  public boolean isDwarfUsed(Long gameId) {
+    return heroesService.isDwarfUsed(gameId);
+  }
+
+  public boolean isWizardUsed(Long gameId) {
+    return heroesService.isWizardUsed(gameId);
   }
 
   public String[][] getGameboard(Long gameId) {
@@ -75,5 +95,11 @@ public class GameService {
     }
 
     return gameboard;
+  }
+
+  private boolean isTurnOver(Long gameId) {
+
+    return heroesService.isDwarfUsed(gameId) && heroesService.isGnomeUsed(gameId)
+        && heroesService.isWizardUsed(gameId);
   }
 }

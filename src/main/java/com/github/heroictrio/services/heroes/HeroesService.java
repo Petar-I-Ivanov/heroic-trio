@@ -10,6 +10,7 @@ import com.github.heroictrio.utilities.Constants;
 import com.github.heroictrio.utilities.Position;
 import com.github.heroictrio.validators.Input;
 import jakarta.enterprise.context.ApplicationScoped;
+import java.util.List;
 
 @ApplicationScoped
 public class HeroesService {
@@ -30,6 +31,31 @@ public class HeroesService {
     this.dwarfService = dwarfService;
     this.gnomeService = gnomeService;
     this.wizardService = wizardService;
+  }
+
+  public boolean isGnomeUsed(Long gameId) {
+    return goRepo.findSingleByGameId(gameId, Gnome.class).isUsedThisTurn();
+  }
+
+  public boolean isDwarfUsed(Long gameId) {
+    return goRepo.findSingleByGameId(gameId, Dwarf.class).isUsedThisTurn();
+  }
+
+  public boolean isWizardUsed(Long gameId) {
+    return goRepo.findSingleByGameId(gameId, Wizard.class).isUsedThisTurn();
+  }
+
+  public void newTurn(Long gameId) {
+
+    Gnome gnome = goRepo.findSingleByGameId(gameId, Gnome.class);
+    Dwarf dwarf = goRepo.findSingleByGameId(gameId, Dwarf.class);
+    Wizard wizard = goRepo.findSingleByGameId(gameId, Wizard.class);
+
+    gnome.setUsedThisTurn(false);
+    dwarf.setUsedThisTurn(false);
+    wizard.setUsedThisTurn(false);
+
+    goRepo.save(List.of(gnome, dwarf, wizard));
   }
 
   public void initializeHeroes(Game game) {
@@ -73,9 +99,18 @@ public class HeroesService {
 
     switch (heroPick) {
 
-      case Constants.GNOME_PICK -> gnomeService.move(gameId, direction);
-      case Constants.DWARF_PICK -> dwarfService.move(gameId, direction);
-      case Constants.WIZARD_PICK -> wizardService.move(gameId, direction);
+      case Constants.GNOME_PICK -> {
+        gnomeService.move(gameId, direction);
+        gnomeService.setGnomeUsed(gameId);
+      }
+      case Constants.DWARF_PICK -> {
+        dwarfService.move(gameId, direction);
+        dwarfService.setDwarfUsed(gameId);
+      }
+      case Constants.WIZARD_PICK -> {
+        wizardService.move(gameId, direction);
+        wizardService.setWizardUsed(gameId);
+      }
 
       default -> throw new IllegalArgumentException("Unexpected value: " + heroPick);
     }
@@ -93,6 +128,7 @@ public class HeroesService {
         byte numberOfSquares = input.getNumberOfSquares();
 
         gnomeService.ability(game, direction, numberOfSquares);
+        gnomeService.setGnomeUsed(game.getId());
         break;
       }
 
@@ -102,6 +138,7 @@ public class HeroesService {
         Position positionTwo = new Position(input.getRowTwo(), input.getColTwo());
 
         dwarfService.ability(game.getId(), positionOne, positionTwo);
+        dwarfService.setDwarfUsed(game.getId());
         break;
       }
 
@@ -112,6 +149,7 @@ public class HeroesService {
         boolean isAscending = input.getSortType().equals("ascending");
 
         wizardService.ability(game.getId(), positionOne, positionTwo, isAscending);
+        wizardService.setWizardUsed(game.getId());
         break;
       }
 

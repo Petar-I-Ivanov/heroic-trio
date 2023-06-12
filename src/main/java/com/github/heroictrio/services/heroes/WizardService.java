@@ -22,9 +22,20 @@ public class WizardService {
     this.terrainService = terrainService;
   }
 
+  public void setWizardUsed(Long gameId) {
+    Wizard wizard = goRepo.findSingleByGameId(gameId, Wizard.class);
+    wizard.setUsedThisTurn(true);
+    goRepo.save(wizard);
+  }
+
   public void move(Long gameId, char direction) {
 
     Wizard wizard = goRepo.findSingleByGameId(gameId, Wizard.class);
+
+    if (wizard.isUsedThisTurn()) {
+      throw new IllegalArgumentException("This unit is used already!");
+    }
+
     Position position = Position.getNewPositionFromDirection(wizard.getLocation(), direction);
 
     if (isNextPositionInvalid(gameId, wizard.getLastValue(), position)) {
@@ -38,6 +49,12 @@ public class WizardService {
 
   public void ability(Long gameId, Position fromPosition, Position toPosition,
       boolean isAscending) {
+
+    Wizard wizard = goRepo.findSingleByGameId(gameId, Wizard.class);
+
+    if (wizard.isUsedThisTurn()) {
+      throw new IllegalArgumentException("This unit is used already!");
+    }
 
     if (!Position.arePositionsInline(fromPosition, toPosition)) {
       throw new IllegalArgumentException("Two positions aren't inline!");

@@ -24,9 +24,20 @@ public class DwarfService {
     this.terrainService = terrainService;
   }
 
+  public void setDwarfUsed(Long gameId) {
+    Dwarf dwarf = goRepo.findSingleByGameId(gameId, Dwarf.class);
+    dwarf.setUsedThisTurn(true);
+    goRepo.save(dwarf);
+  }
+
   public void move(Long gameId, char direction) {
 
     Dwarf dwarf = goRepo.findSingleByGameId(gameId, Dwarf.class);
+
+    if (dwarf.isUsedThisTurn()) {
+      throw new IllegalArgumentException("This unit is used already!");
+    }
+
     Position position = Position.getNewPositionFromDirection(dwarf.getLocation(), direction);
 
     if (isNextPositionInvalid(gameId, dwarf.getLastValue(), position)) {
@@ -41,6 +52,10 @@ public class DwarfService {
   public void ability(Long gameId, Position positionOne, Position positionTwo) {
 
     Dwarf dwarf = goRepo.findSingleByGameId(gameId, Dwarf.class);
+
+    if (dwarf.isUsedThisTurn()) {
+      throw new IllegalArgumentException("This unit is used already!");
+    }
 
     List<Position> workingField = getWorkingField(dwarf, positionOne);
 

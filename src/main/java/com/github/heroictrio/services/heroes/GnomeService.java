@@ -23,9 +23,20 @@ public class GnomeService {
     this.terrainService = terrainService;
   }
 
+  public void setGnomeUsed(Long gameId) {
+    Gnome gnome = goRepo.findSingleByGameId(gameId, Gnome.class);
+    gnome.setUsedThisTurn(true);
+    goRepo.save(gnome);
+  }
+
   public void move(Long gameId, char direction) {
 
     Gnome gnome = goRepo.findSingleByGameId(gameId, Gnome.class);
+
+    if (gnome.isUsedThisTurn()) {
+      throw new IllegalArgumentException("This unit is used already!");
+    }
+
     Position position = Position.getNewPositionFromDirection(gnome.getLocation(), direction);
 
     if (isNextPositionInvalid(gameId, position)) {
@@ -40,12 +51,17 @@ public class GnomeService {
   public void ability(Game game, char direction, byte numberOfSquares) {
 
     Long gameId = game.getId();
+    Gnome gnome = goRepo.findSingleByGameId(gameId, Gnome.class);
+
+    if (gnome.isUsedThisTurn()) {
+      throw new IllegalArgumentException("This unit is used already!");
+    }
 
     if (numberOfSquares != 2 && numberOfSquares != 3) {
       throw new IllegalArgumentException("Invalid value for numberOfSquares: " + numberOfSquares);
     }
 
-    Position gnomePosition = goRepo.findSingleByGameId(gameId, Gnome.class).getLocation();
+    Position gnomePosition = gnome.getLocation();
     int sum = getSum(gameId, gnomePosition, direction, numberOfSquares);
 
     if (sum == -1) {
@@ -99,7 +115,7 @@ public class GnomeService {
 
     int sum = 0;
 
-    for (int i = 0; i <= numberOfSquares; i++) {
+    for (int i = 0; i < numberOfSquares; i++) {
 
       int value = terrainService.getValueAt(gameId, nextPosition);
 

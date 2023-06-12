@@ -8,11 +8,11 @@ public class Constants {
   public static final byte MAX_ROW = 12;
   public static final byte MAX_COL = 18;
 
-  public static final String GNOME_SIGN = "#";
-  public static final String DWARF_SIGN = "$";
-  public static final String WIZARD_SIGN = "%";
+  public static final String GNOME_SIGN = "G";
+  public static final String DWARF_SIGN = "D";
+  public static final String WIZARD_SIGN = "W";
   public static final String BOSS_SIGN = "X";
-  public static final String EMPTY_CORNER_SIGN = "@";
+  public static final String EMPTY_CORNER_SIGN = "E";
 
   public static final char FORWARD_MOVE = 'w';
   public static final char RIGHT_MOVE = 'd';

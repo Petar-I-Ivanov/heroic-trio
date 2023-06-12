@@ -9,5 +9,10 @@ public class GameDTO {
   private long id;
   private short turn;
   private GameStatusEnum status;
+
+  private boolean isGnomeUsed;
+  private boolean isDwarfUsed;
+  private boolean isWizardUsed;
+
   private String[][] gameboard;
 }

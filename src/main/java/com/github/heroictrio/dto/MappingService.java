@@ -34,6 +34,9 @@ public class MappingService {
     dto.setTurn(game.getTurn());
     dto.setStatus(game.getStatus());
 
+    dto.setGnomeUsed(gameService.isGnomeUsed(game.getId()));
+    dto.setDwarfUsed(gameService.isDwarfUsed(game.getId()));
+    dto.setWizardUsed(gameService.isWizardUsed(game.getId()));
     dto.setGameboard(gameService.getGameboard(game.getId()));
 
     return dto;
