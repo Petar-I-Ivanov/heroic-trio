@@ -2,8 +2,7 @@ package com.github.heroictrio.services.heroes;
 
 import com.github.heroictrio.models.gameboard.heroes.Wizard;
 import com.github.heroictrio.repositories.GameboardObjectRepository;
-import com.github.heroictrio.services.PositionCheckService;
-import com.github.heroictrio.services.TerrainService;
+import com.github.heroictrio.services.terrain.TerrainService;
 import com.github.heroictrio.utilities.Position;
 import jakarta.enterprise.context.ApplicationScoped;
 
@@ -11,14 +10,10 @@ import jakarta.enterprise.context.ApplicationScoped;
 public class WizardService {
 
   private GameboardObjectRepository goRepo;
-  private PositionCheckService positionService;
   private TerrainService terrainService;
 
-  public WizardService(GameboardObjectRepository goRepo, PositionCheckService positionCheckService,
-      TerrainService terrainService) {
-
+  public WizardService(GameboardObjectRepository goRepo, TerrainService terrainService) {
     this.goRepo = goRepo;
-    this.positionService = positionCheckService;
     this.terrainService = terrainService;
   }
 
@@ -38,13 +33,23 @@ public class WizardService {
 
     Position position = Position.getNewPositionFromDirection(wizard.getLocation(), direction);
 
-    if (isNextPositionInvalid(gameId, wizard.getLastValue(), position)) {
-      throw new IllegalArgumentException("Next value isn't proggresive even!");
+    if (isNextPositionBackgroundAndValid(gameId, wizard.getLastValue(), position)) {
+
+      terrainService.removeBackgroundAt(gameId, position);
+      wizard.setLocation(position);
+      goRepo.save(wizard);
+      return;
     }
 
-    terrainService.deleteTerrainAt(gameId, position);
-    wizard.setLocation(position);
-    goRepo.save(wizard);
+    if (terrainService.isPositionBoss(gameId, position)) {
+
+      terrainService.removeBossAt(gameId, position);
+      wizard.setLocation(position);
+      goRepo.save(wizard);
+      return;
+    }
+
+    throw new IllegalArgumentException("Next value isn't proggresive even!");
   }
 
   public void ability(Long gameId, Position fromPosition, Position toPosition,
@@ -56,28 +61,36 @@ public class WizardService {
       throw new IllegalArgumentException("This unit is used already!");
     }
 
-    if (!Position.arePositionsInline(fromPosition, toPosition)) {
-      throw new IllegalArgumentException("Two positions aren't inline!");
+    if (Position.arePositionsInline(fromPosition, toPosition)) {
+
+      if (shouldPositionsSwitch(fromPosition, toPosition)) {
+
+        Position temp = fromPosition;
+        fromPosition = toPosition;
+        toPosition = temp;
+      }
+
+      terrainService.orderBackgrounds(gameId, fromPosition, toPosition, isAscending);
+      return;
     }
 
-    if ((fromPosition.getRow() > toPosition.getRow())
-        || fromPosition.getCol() > toPosition.getCol()) {
-
-      Position temp = fromPosition;
-      fromPosition = toPosition;
-      toPosition = temp;
-    }
-
-    terrainService.orderBackgroundsFromToPosition(gameId, fromPosition, toPosition, isAscending);
+    throw new IllegalArgumentException("Two positions aren't inline or correct!");
   }
 
-  private boolean isNextPositionInvalid(Long gameId, int wizardLastValue, Position nextPosition) {
+  private boolean isNextPositionBackgroundAndValid(Long gameId, int wizardLastValue,
+      Position nextPosition) {
 
-    int nextValue = positionService.getPositionValue(gameId, nextPosition);
-    return nextValue == -1 || !isDecraciveNumber(wizardLastValue, nextValue);
+    int nextValue = terrainService.getBackgroundValueAt(gameId, nextPosition);
+
+    return terrainService.isPositionBackground(gameId, nextPosition)
+        && isDecreasingNumber(wizardLastValue, nextValue);
   }
 
-  private static boolean isDecraciveNumber(int wizardLastValue, int nextValue) {
+  private static boolean isDecreasingNumber(int wizardLastValue, int nextValue) {
     return nextValue < wizardLastValue;
+  }
+
+  private static boolean shouldPositionsSwitch(Position one, Position two) {
+    return (one.getRow() > two.getRow()) || one.getCol() > two.getCol();
   }
 }

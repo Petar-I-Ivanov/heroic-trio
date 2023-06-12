@@ -5,7 +5,6 @@ import com.github.heroictrio.utilities.Position;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityManager;
-import jakarta.persistence.Inheritance;
 import jakarta.persistence.NoResultException;
 import jakarta.persistence.NonUniqueResultException;
 import jakarta.persistence.TypedQuery;
@@ -189,7 +188,6 @@ public class GameboardObjectRepository {
   private boolean isGameboardObject(Class<?> entityClass) {
 
     return entityClass.isAnnotationPresent(Entity.class)
-        && !entityClass.isAnnotationPresent(Inheritance.class)
         && GameboardObject.class.isAssignableFrom(entityClass);
   }
 }

@@ -1,5 +1,6 @@
 package com.github.heroictrio.services;
 
+import com.github.heroictrio.repositories.GameboardObjectRepository;
 import com.github.heroictrio.utilities.Constants;
 import com.github.heroictrio.utilities.Position;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -11,18 +12,17 @@ import java.util.Random;
 public class RandomGeneratorService {
 
   private final Random RANDOM;
-  private PositionCheckService positionService;
+  private GameboardObjectRepository goRepo;
 
-  public RandomGeneratorService(PositionCheckService positionService) {
-
+  public RandomGeneratorService(GameboardObjectRepository goRepo) {
     this.RANDOM = new Random();
-    this.positionService = positionService;
+    this.goRepo = goRepo;
   }
 
   public Position getRandomFreeCorner(Long gameId) {
 
-    List<Position> filteredPositions = getCornerPositions().stream()
-        .filter(position -> positionService.isPositionFree(gameId, position)).toList();
+    List<Position> filteredPositions =
+        getCornerPositions().stream().filter(position -> isPositionFree(gameId, position)).toList();
 
     return getRandomPositionFromList(filteredPositions);
   }
@@ -46,5 +46,9 @@ public class RandomGeneratorService {
 
     return Arrays.asList(new Position(0, 0), new Position(0, maxCol), new Position(maxRow, 0),
         new Position(maxRow, maxCol));
+  }
+
+  private boolean isPositionFree(Long gameId, Position position) {
+    return goRepo.findAnyByGameIdAndPosition(gameId, position) == null;
   }
 }

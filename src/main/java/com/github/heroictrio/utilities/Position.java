@@ -23,10 +23,10 @@ public class Position {
 
     return switch (direction) {
 
-      case 'a' -> new Position(position.getRow(), position.getCol() - 1);
-      case 'w' -> new Position(position.getRow() - 1, position.getCol());
-      case 'd' -> new Position(position.getRow(), position.getCol() + 1);
-      case 's' -> new Position(position.getRow() + 1, position.getCol());
+      case Constants.LEFT_MOVE -> new Position(position.getRow(), position.getCol() - 1);
+      case Constants.FORWARD_MOVE -> new Position(position.getRow() - 1, position.getCol());
+      case Constants.RIGHT_MOVE -> new Position(position.getRow(), position.getCol() + 1);
+      case Constants.BACKWARD_MOVE -> new Position(position.getRow() + 1, position.getCol());
 
       default -> throw new IllegalArgumentException("Unexpected value: " + direction);
     };

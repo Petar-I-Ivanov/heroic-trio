@@ -2,6 +2,7 @@ package com.github.heroictrio.models.gameboard.terrain;
 
 import com.github.heroictrio.models.Game;
 import com.github.heroictrio.models.gameboard.GameboardObject;
+import com.github.heroictrio.utilities.Position;
 import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
@@ -19,6 +20,14 @@ public class Background extends GameboardObject {
 
   public Background() {
     super(null);
+  }
+
+  public Background(int value, Position positon, Game game) {
+
+    super(String.valueOf(value));
+    this.rowLocation = positon.getRow();
+    this.colLocation = positon.getCol();
+    this.game = game;
   }
 
   public Background(int value) {

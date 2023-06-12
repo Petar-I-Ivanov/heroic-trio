@@ -2,8 +2,7 @@ package com.github.heroictrio.services.heroes;
 
 import com.github.heroictrio.models.gameboard.heroes.Dwarf;
 import com.github.heroictrio.repositories.GameboardObjectRepository;
-import com.github.heroictrio.services.PositionCheckService;
-import com.github.heroictrio.services.TerrainService;
+import com.github.heroictrio.services.terrain.TerrainService;
 import com.github.heroictrio.utilities.Position;
 import jakarta.enterprise.context.ApplicationScoped;
 import java.util.ArrayList;
@@ -13,14 +12,11 @@ import java.util.List;
 public class DwarfService {
 
   private GameboardObjectRepository goRepo;
-  private PositionCheckService positionService;
   private TerrainService terrainService;
 
-  public DwarfService(GameboardObjectRepository goRepo, PositionCheckService positionCheckService,
-      TerrainService terrainService) {
+  public DwarfService(GameboardObjectRepository goRepo, TerrainService terrainService) {
 
     this.goRepo = goRepo;
-    this.positionService = positionCheckService;
     this.terrainService = terrainService;
   }
 
@@ -40,13 +36,23 @@ public class DwarfService {
 
     Position position = Position.getNewPositionFromDirection(dwarf.getLocation(), direction);
 
-    if (isNextPositionInvalid(gameId, dwarf.getLastValue(), position)) {
-      throw new IllegalArgumentException("Next value isn't proggresive even!");
+    if (isNextPositionBackgroundAndValid(gameId, dwarf.getLastValue(), position)) {
+
+      terrainService.removeBackgroundAt(gameId, position);
+      dwarf.setLocation(position);
+      goRepo.save(dwarf);
+      return;
     }
 
-    terrainService.deleteTerrainAt(gameId, position);
-    dwarf.setLocation(position);
-    goRepo.save(dwarf);
+    if (terrainService.isPositionBoss(gameId, position)) {
+
+      terrainService.removeBossAt(gameId, position);
+      dwarf.setLocation(position);
+      goRepo.save(dwarf);
+      return;
+    }
+
+    throw new IllegalArgumentException("Next value isn't proggresive even or boss!");
   }
 
   public void ability(Long gameId, Position positionOne, Position positionTwo) {
@@ -60,17 +66,20 @@ public class DwarfService {
     List<Position> workingField = getWorkingField(dwarf, positionOne);
 
     if (workingField != null && workingField.contains(positionTwo)) {
-      terrainService.switchBackgroundsAt(gameId, positionOne, positionTwo);
+      terrainService.switchTwoBackgrounds(gameId, positionOne, positionTwo);
       return;
     }
 
     throw new IllegalArgumentException("Invalid positions for dwarf ability");
   }
 
-  private boolean isNextPositionInvalid(Long gameId, int dwarfLastValue, Position nextPosition) {
+  private boolean isNextPositionBackgroundAndValid(Long gameId, int dwarfLastValue,
+      Position nextPosition) {
 
-    int nextValue = positionService.getPositionValue(gameId, nextPosition);
-    return nextValue == -1 || !isProggressiveEvenNumber(dwarfLastValue, nextValue);
+    int nextValue = terrainService.getBackgroundValueAt(gameId, nextPosition);
+
+    return terrainService.isPositionBackground(gameId, nextPosition)
+        && isProggressiveEvenNumber(dwarfLastValue, nextValue);
   }
 
   private List<Position> getWorkingField(Dwarf dwarf, Position position) {
@@ -132,7 +141,7 @@ public class DwarfService {
 
         Position position = new Position(row, col);
 
-        if (terrainService.getValueAt(gameId, position) != -1) {
+        if (terrainService.isPositionBackground(gameId, startingPosition)) {
           squareValues.add(position);
         }
       }

@@ -10,6 +10,8 @@ import SetHeroPick from "./inputs/SetHeroPick";
 
 function FormGame(props) {
 
+    const [error, setError] = createSignal();
+
     const [heroPick, setHeroPick] = createSignal();
     const [action, setAction] = createSignal();
 
@@ -40,20 +42,25 @@ function FormGame(props) {
             sortType: sortType()
         }
 
+        setHeroPick(); setAction(); setDirection(); setRowOne(-1);
+        setColOne(-1); setRowTwo(-1); setColTwo(-1); setNumberOfSquares(-1);
+        setSortType();
+
         const response = await fetch(`http://localhost:8080/game/${props.gameId}`, {
             method: 'PUT',
             headers: { 'content-type': 'application/json' },
             body: JSON.stringify(body)
         });
 
-        if (response.status === 200) {
-            const json = await response.json();
-            props.setGame(json);
+        if (response.status !== 200) {
+            const text = await response.text();
+            setError(text);
+            return;
         }
 
-        setHeroPick(); setAction(); setDirection(); setRowOne(-1);
-        setColOne(-1); setRowTwo(-1); setColTwo(-1); setNumberOfSquares(-1);
-        setSortType();
+        const json = await response.json();
+        props.setGame(json);
+        setError();
     }
 
     return (
@@ -74,7 +81,8 @@ function FormGame(props) {
                 colOne={colOne} setColOne={setColOne} rowTwo={rowTwo} setRowTwo={setRowTwo} colTwo={colTwo} setColTwo={setColTwo}
                 sortType={sortType} setSortType={setSortType} />}
 
-            <br/>
+            
+            {error() && <p>{error()}</p>}
             <button type='submit'>Submit</button>
         </form>
     );

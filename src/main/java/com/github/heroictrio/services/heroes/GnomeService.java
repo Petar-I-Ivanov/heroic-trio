@@ -3,8 +3,7 @@ package com.github.heroictrio.services.heroes;
 import com.github.heroictrio.models.Game;
 import com.github.heroictrio.models.gameboard.heroes.Gnome;
 import com.github.heroictrio.repositories.GameboardObjectRepository;
-import com.github.heroictrio.services.PositionCheckService;
-import com.github.heroictrio.services.TerrainService;
+import com.github.heroictrio.services.terrain.TerrainService;
 import com.github.heroictrio.utilities.Position;
 import jakarta.enterprise.context.ApplicationScoped;
 
@@ -12,14 +11,10 @@ import jakarta.enterprise.context.ApplicationScoped;
 public class GnomeService {
 
   private GameboardObjectRepository goRepo;
-  private PositionCheckService positionService;
   private TerrainService terrainService;
 
-  public GnomeService(GameboardObjectRepository goRepo, PositionCheckService positionService,
-      TerrainService terrainService) {
-
+  public GnomeService(GameboardObjectRepository goRepo, TerrainService terrainService) {
     this.goRepo = goRepo;
-    this.positionService = positionService;
     this.terrainService = terrainService;
   }
 
@@ -39,13 +34,23 @@ public class GnomeService {
 
     Position position = Position.getNewPositionFromDirection(gnome.getLocation(), direction);
 
-    if (isNextPositionInvalid(gameId, position)) {
-      throw new IllegalArgumentException("Next value isn't higher than around's average!");
+    if (isNextPositionBackgroundAndValid(gameId, position)) {
+
+      terrainService.removeBackgroundAt(gameId, position);
+      gnome.setLocation(position);
+      goRepo.save(gnome);
+      return;
     }
 
-    terrainService.deleteTerrainAt(gameId, position);
-    gnome.setLocation(position);
-    goRepo.save(gnome);
+    if (terrainService.isPositionBoss(gameId, position)) {
+
+      terrainService.removeBossAt(gameId, position);
+      gnome.setLocation(position);
+      goRepo.save(gnome);
+      return;
+    }
+
+    throw new IllegalArgumentException("Next value isn't higher than around's average!");
   }
 
   public void ability(Game game, char direction, byte numberOfSquares) {
@@ -57,31 +62,28 @@ public class GnomeService {
       throw new IllegalArgumentException("This unit is used already!");
     }
 
-    if (numberOfSquares != 2 && numberOfSquares != 3) {
-      throw new IllegalArgumentException("Invalid value for numberOfSquares: " + numberOfSquares);
-    }
-
     Position gnomePosition = gnome.getLocation();
     int sum = getSum(gameId, gnomePosition, direction, numberOfSquares);
 
-    if (sum == -1) {
-      throw new IllegalArgumentException("No backgrounds in picked direction!");
+    if (sum != 0) {
+
+      Position nextPosition = Position.getNewPositionFromDirection(gnomePosition, direction);
+      terrainService.addBackground(game, nextPosition, sum);
+      return;
     }
 
-    Position nextPosition = Position.getNewPositionFromDirection(gnomePosition, direction);
-    terrainService.setValueAtBackground(game, nextPosition, sum);
-
+    throw new IllegalArgumentException("No backgrounds in picked direction!");
   }
 
-  private boolean isNextPositionInvalid(Long gameId, Position nextPosition) {
+  private boolean isNextPositionBackgroundAndValid(Long gameId, Position nextPosition) {
 
-    int nextValue = positionService.getPositionValue(gameId, nextPosition);
-    return nextValue == -1 || !isAroundAvgLower(gameId, nextPosition);
+    return terrainService.isPositionBackground(gameId, nextPosition)
+        && isAroundAvgLower(gameId, nextPosition);
   }
 
   private boolean isAroundAvgLower(Long gameId, Position nextPosition) {
 
-    int valueToCheck = positionService.getPositionValue(gameId, nextPosition);
+    int valueToCheck = terrainService.getBackgroundValueAt(gameId, nextPosition);
 
     int sum = 0;
     int counter = 0;
@@ -96,12 +98,16 @@ public class GnomeService {
       for (int col = startCol; col <= endCol; col++) {
 
         Position position = new Position(row, col);
-        int value = positionService.getPositionValue(gameId, position);
 
-        if (value != -1 && value != valueToCheck) {
+        if (terrainService.isPositionBackground(gameId, position)) {
 
-          sum += value;
-          counter++;
+          int value = terrainService.getBackgroundValueAt(gameId, position);
+
+          if (value != valueToCheck) {
+
+            sum += value;
+            counter++;
+          }
         }
       }
     }
@@ -117,15 +123,14 @@ public class GnomeService {
 
     for (int i = 0; i < numberOfSquares; i++) {
 
-      int value = terrainService.getValueAt(gameId, nextPosition);
+      if (terrainService.isPositionBackground(gameId, nextPosition)) {
 
-      if (value != -1) {
-        sum += value;
-        terrainService.deleteTerrainAt(gameId, nextPosition);
+        sum += terrainService.getBackgroundValueAt(gameId, nextPosition);
+        terrainService.removeBackgroundAt(gameId, nextPosition);
         nextPosition = Position.getNewPositionFromDirection(nextPosition, direction);
       }
     }
 
-    return (sum != 0) ? sum : -1;
+    return sum;
   }
 }

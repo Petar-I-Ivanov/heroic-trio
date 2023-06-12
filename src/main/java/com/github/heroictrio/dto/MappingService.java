@@ -1,6 +1,7 @@
 package com.github.heroictrio.dto;
 
 import com.github.heroictrio.models.Game;
+import com.github.heroictrio.models.GameStatusEnum;
 import com.github.heroictrio.services.GameService;
 import com.github.heroictrio.validators.Input;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -34,10 +35,13 @@ public class MappingService {
     dto.setTurn(game.getTurn());
     dto.setStatus(game.getStatus());
 
-    dto.setGnomeUsed(gameService.isGnomeUsed(game.getId()));
-    dto.setDwarfUsed(gameService.isDwarfUsed(game.getId()));
-    dto.setWizardUsed(gameService.isWizardUsed(game.getId()));
-    dto.setGameboard(gameService.getGameboard(game.getId()));
+    if (game.getStatus() == GameStatusEnum.ONGOING) {
+
+      dto.setGnomeUsed(gameService.isGnomeUsed(game.getId()));
+      dto.setDwarfUsed(gameService.isDwarfUsed(game.getId()));
+      dto.setWizardUsed(gameService.isWizardUsed(game.getId()));
+      dto.setGameboard(gameService.getGameboard(game.getId()));
+    }
 
     return dto;
   }

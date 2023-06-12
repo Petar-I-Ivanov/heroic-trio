@@ -5,6 +5,7 @@ import com.github.heroictrio.models.gameboard.GameboardObject;
 import com.github.heroictrio.repositories.GameRepository;
 import com.github.heroictrio.repositories.GameboardObjectRepository;
 import com.github.heroictrio.services.heroes.HeroesService;
+import com.github.heroictrio.services.terrain.TerrainService;
 import com.github.heroictrio.utilities.Constants;
 import com.github.heroictrio.utilities.Position;
 import com.github.heroictrio.validators.Input;
@@ -88,7 +89,7 @@ public class GameService {
           Position position = new Position(row, col);
           Game game = gameRepository.findById(gameId);
 
-          terrainService.addBackgroundAt(game, position);
+          terrainService.addBackground(game, position);
           gameboard[row][col] = goRepo.findAnyByGameIdAndPosition(gameId, position).getSign();
         }
       }
