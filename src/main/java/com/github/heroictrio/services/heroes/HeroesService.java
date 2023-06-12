@@ -56,7 +56,7 @@ public class HeroesService {
 
   public void handleAction(Game game, Input input) {
 
-    boolean isMovement = input.getAction().equals("movemenet");
+    boolean isMovement = input.getAction().equals("movement");
 
     if (isMovement) {
       move(game.getId(), input);

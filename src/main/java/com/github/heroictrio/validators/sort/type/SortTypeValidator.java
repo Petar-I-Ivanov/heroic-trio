@@ -11,6 +11,10 @@ public class SortTypeValidator implements ConstraintValidator<ValidSortType, Str
   @Override
   public boolean isValid(String sortType, ConstraintValidatorContext context) {
 
-    return sortType.equals(ASCENDING) || sortType.equals(DESCENDING);
+    return isDefaultValue(sortType) || sortType.equals(ASCENDING) || sortType.equals(DESCENDING);
+  }
+
+  private static boolean isDefaultValue(String value) {
+    return value == null;
   }
 }

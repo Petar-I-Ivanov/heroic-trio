@@ -13,11 +13,19 @@ public class DirectionValidator implements ConstraintValidator<ValidDirection, S
   @Override
   public boolean isValid(String directionValue, ConstraintValidatorContext context) {
 
+    if (isDefaultValue(directionValue)) {
+      return true;
+    }
+
     if (directionValue.length() != 1) {
       return false;
     }
 
     char direction = directionValue.charAt(0);
     return List.of(FORWARD_MOVE, RIGHT_MOVE, BACKWARD_MOVE, LEFT_MOVE).contains(direction);
+  }
+
+  private static boolean isDefaultValue(String value) {
+    return value == null;
   }
 }

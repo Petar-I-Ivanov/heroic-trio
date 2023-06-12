@@ -1,5 +1,6 @@
 package com.github.heroictrio.api;
 
+import static jakarta.ws.rs.core.MediaType.APPLICATION_JSON;
 import com.github.heroictrio.dto.GameDTO;
 import com.github.heroictrio.dto.MappingService;
 import com.github.heroictrio.validators.Input;
@@ -11,11 +12,10 @@ import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
-import jakarta.ws.rs.core.MediaType;
 
 @Path("/game")
-@Consumes(MediaType.APPLICATION_JSON)
-@Produces(MediaType.APPLICATION_JSON)
+@Consumes(APPLICATION_JSON)
+@Produces(APPLICATION_JSON)
 public class GameApi {
 
   private MappingService mappingService;

@@ -2,6 +2,7 @@ function RenderGame(props) {
 
     return (
         <table>
+            {console.log(props.game)}
             <tbody>
                 {props.game.gameboard.map((row, rowIndex) => (
                     <tr key={rowIndex}>

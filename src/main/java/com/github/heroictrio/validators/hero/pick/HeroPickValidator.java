@@ -20,5 +20,4 @@ public class HeroPickValidator implements ConstraintValidator<ValidHeroPick, Str
 
     return List.of(DWARF_PICK, GNOME_PICK, WIZARD_PICK).contains(heroPick);
   }
-
 }
