@@ -1,0 +1,29 @@
+.table {
+    border-collapse: collapse;
+}
+
+.table th,
+.table td {
+    padding: 8px;
+    border: 1px solid #ddd;
+}
+
+.table th {
+    font-weight: bold;
+}
+
+.table td {
+    text-align: center;
+}
+
+.table td img {
+    width: 25px;
+    height: 25px;
+}
+
+.table td p {
+    width: 25px;
+    height: 25px;
+    margin: 0;
+    line-height: 25px;
+}

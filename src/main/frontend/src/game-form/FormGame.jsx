@@ -1,3 +1,4 @@
+import { useNavigate } from "@solidjs/router";
 import { createSignal } from "solid-js";
 
 import SetDwarfAbilityScenario from "./inputs/scenarios/SetDwarfAbilityScenario";
@@ -8,8 +9,11 @@ import SetWizardAbilityScenario from "./inputs/scenarios/SetWizardAbilityScenari
 import SetAction from "./inputs/SetAction";
 import SetHeroPick from "./inputs/SetHeroPick";
 
+import './FormGame.css';
+
 function FormGame(props) {
 
+    const navigate = useNavigate();
     const [error, setError] = createSignal();
 
     const [heroPick, setHeroPick] = createSignal();
@@ -31,20 +35,13 @@ function FormGame(props) {
         e.preventDefault();
 
         const body = {
-            heroPick: heroPick(),
-            action: action(),
-            direction: direction(),
-            rowOne: rowOne(),
-            colOne: colOne(),
-            rowTwo: rowTwo(),
-            colTwo: colTwo(),
-            numberOfSquares: numberOfSquares(),
-            sortType: sortType()
+            heroPick: heroPick(), action: action(), direction: direction(),
+            rowOne: rowOne(), colOne: colOne(), rowTwo: rowTwo(), colTwo: colTwo(),
+            numberOfSquares: numberOfSquares(), sortType: sortType()
         }
 
-        setHeroPick(); setAction(); setDirection(); setRowOne(-1);
-        setColOne(-1); setRowTwo(-1); setColTwo(-1); setNumberOfSquares(-1);
-        setSortType();
+        setHeroPick(); setAction(); setDirection(); setRowOne(-1); setColOne(-1);
+        setRowTwo(-1); setColTwo(-1); setNumberOfSquares(-1); setSortType();
 
         const response = await fetch(`http://localhost:8080/game/${props.gameId}`, {
             method: 'PUT',
@@ -59,50 +56,109 @@ function FormGame(props) {
         }
 
         const json = await response.json();
+
+        console.log(json.status);
+        if (json.status === 'WON' || json.status === 'LOST') {
+            navigate(`/result/${json.id}`);
+        }
+
         props.setGame(json);
         setError();
     }
 
+    function isMovementScenario() {
+        return action() === 'movement' && heroPick();
+    }
+    
+    function isGnomeAbilityScenario() {
+        return action() === 'ability' && heroPick() === '1';
+    }
+    
+    function isDwarfAbilityScenario() {
+        return action() === 'ability' && heroPick() === '2';
+    }
+    
+    function isWizardAbilityScenario() {
+        return action() === 'ability' && heroPick() === '3';
+    }
+
+    function isMovementScenarioFilled() {
+        return direction();
+    }
+
+    function isGnomeAbilityScenarioFilled() {
+        return direction() && numberOfSquares() !== -1;
+    }
+
+    function isDwarfAbilityScenarioFilled() {
+        return (rowOne() !== -1 && colOne() !== -1)
+            && (rowTwo() !== -1 && colTwo() !== -1);
+    }
+
+    function isWizardAbilityScenarioFilled() {
+        return (rowOne() !== -1 && colOne() !== -1)
+            && (rowTwo() !== -1 && colTwo() !== -1)
+            && sortType();
+    }
+
+    function isAnyScenarioAvailable() {
+        return isMovementScenarioAndFilled() || isGnomeAbilityScenarioAndFilled()
+            || isDwarfAbilityScenarioAndFilled() || isWizardAbilityScenarioAndFilled();
+    }
+
+    function isMovementScenarioAndFilled() {
+        return isMovementScenario() && isMovementScenarioFilled();
+    }
+
+    function isGnomeAbilityScenarioAndFilled() {
+        return isGnomeAbilityScenario() && isGnomeAbilityScenarioFilled();
+    }
+
+    function isDwarfAbilityScenarioAndFilled() {
+        return isDwarfAbilityScenario() && isDwarfAbilityScenarioFilled();
+    }
+
+    function isWizardAbilityScenarioAndFilled() {
+        return isWizardAbilityScenario() && isWizardAbilityScenarioFilled();
+    }
+
+    function isMovementScenarioAndNotFilled() {
+        return isMovementScenario() && !isMovementScenarioFilled();
+    }
+
+    function isGnomeAbilityScenarioAndNotFilled() {
+        return isGnomeAbilityScenario() && !isGnomeAbilityScenarioFilled();
+    }
+
+    function isDwarfAbilityScenarioAndNotFilled() {
+        return isDwarfAbilityScenario() && !isDwarfAbilityScenarioFilled();
+    }
+
+    function isWizardAbilityScenarioAndNotFilled() {
+        return isWizardAbilityScenario() && !isWizardAbilityScenarioFilled();
+    }
+
     return (
-        <form style='flex: 1; margin-right: 10px;' onSubmit={makeAction}>
+        <form class='form' onSubmit={makeAction}>
 
             {!heroPick() && <SetHeroPick game={props.game} setHeroPick={setHeroPick} />}
             {!action() && <SetAction setAction={setAction} />}
 
-            {isMovementScenario(action()) && <SetMovementScenario direction={direction} setDirection={setDirection} />}
+            {isMovementScenarioAndNotFilled() && <SetMovementScenario setDirection={setDirection} />}
 
-            {isGnomeAbilityScenario(action(), heroPick()) && <SetGnomeAbilityScenario direction={direction}
-                setDirection={setDirection} numberOfSquares={numberOfSquares} setNumberOfSquares={setNumberOfSquares} />}
+            {isGnomeAbilityScenarioAndNotFilled() && <SetGnomeAbilityScenario setDirection={setDirection} setNumberOfSquares={setNumberOfSquares} />}
 
-            {isDwarfAbilityScenario(action(), heroPick()) && <SetDwarfAbilityScenario rowOne={rowOne} setRowOne={setRowOne}
-                colOne={colOne} setColOne={setColOne} rowTwo={rowTwo} setRowTwo={setRowTwo} colTwo={colTwo} setColTwo={setColTwo} />}
+            {isDwarfAbilityScenarioAndNotFilled() && <SetDwarfAbilityScenario setRowOne={setRowOne} setColOne={setColOne}
+            setRowTwo={setRowTwo} setColTwo={setColTwo} />}
 
-            {isWizardAbilityScenario(action(), heroPick()) && <SetWizardAbilityScenario rowOne={rowOne} setRowOne={setRowOne}
-                colOne={colOne} setColOne={setColOne} rowTwo={rowTwo} setRowTwo={setRowTwo} colTwo={colTwo} setColTwo={setColTwo}
-                sortType={sortType} setSortType={setSortType} />}
+            {isWizardAbilityScenarioAndNotFilled() && <SetWizardAbilityScenario setRowOne={setRowOne} setColOne={setColOne}
+            setRowTwo={setRowTwo} setColTwo={setColTwo} setSortType={setSortType} />}
 
             
-            {error() && <p>{error()}</p>}
-            <button type='submit'>Submit</button>
+            {error() && <p class='error-message'>{error()}</p>}
+            {isAnyScenarioAvailable() && <button class='submit-button' type='submit'>Submit</button>}
         </form>
     );
 }
 
 export default FormGame;
-
-
-function isMovementScenario(action) {
-    return action === 'movement';
-}
-
-function isGnomeAbilityScenario(action, heroPick) {
-    return action === 'ability' && heroPick === '1';
-}
-
-function isDwarfAbilityScenario(action, heroPick) {
-    return action === 'ability' && heroPick === '2';
-}
-
-function isWizardAbilityScenario(action, heroPick) {
-    return action === 'ability' && heroPick === '3';
-}

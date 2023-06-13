@@ -6,7 +6,7 @@ function SetDirection(props) {
 
     return (
         <>
-            <h3>Pick Direction:</h3>
+            <h3 class='heading'>Pick Direction:</h3>
 
             <input type='radio' id='forward' name='direction' value="w" onChange={onChange} />
             <label for='forward'>Forward</label>

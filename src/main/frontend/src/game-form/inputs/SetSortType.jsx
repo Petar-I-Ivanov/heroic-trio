@@ -6,7 +6,7 @@ function SetSortType(props) {
 
     return (
         <>
-            <h3>Pick Sort Type:</h3>
+            <h3 class='heading'>Pick Sort Type:</h3>
 
             <input type='radio' id='ascending' name='sortType' value="ascending" onChange={onChange} />
             <label for='ascending'>Ascending</label>

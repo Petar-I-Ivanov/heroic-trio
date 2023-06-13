@@ -33,6 +33,13 @@ public class HeroesService {
     this.wizardService = wizardService;
   }
 
+  public boolean isHeroAtPosition(Long gameId, Position position) {
+
+    return dwarfService.isDwarfAtPosition(gameId, position)
+        || gnomeService.isGnomeAtPosition(gameId, position)
+        || wizardService.isWizardAtPosition(gameId, position);
+  }
+
   public boolean isGnomeUsed(Long gameId) {
     return goRepo.findSingleByGameId(gameId, Gnome.class).isUsedThisTurn();
   }

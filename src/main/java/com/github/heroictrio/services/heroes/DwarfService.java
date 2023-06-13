@@ -20,6 +20,10 @@ public class DwarfService {
     this.terrainService = terrainService;
   }
 
+  public boolean isDwarfAtPosition(Long gameId, Position position) {
+    return goRepo.findByGameIdAndPosition(gameId, position, Dwarf.class) != null;
+  }
+
   public void setDwarfUsed(Long gameId) {
     Dwarf dwarf = goRepo.findSingleByGameId(gameId, Dwarf.class);
     dwarf.setUsedThisTurn(true);

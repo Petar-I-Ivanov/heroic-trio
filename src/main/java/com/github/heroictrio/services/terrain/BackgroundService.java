@@ -8,7 +8,9 @@ import com.github.heroictrio.utilities.Constants;
 import com.github.heroictrio.utilities.Position;
 import jakarta.enterprise.context.ApplicationScoped;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @ApplicationScoped
 public class BackgroundService {
@@ -94,24 +96,18 @@ public class BackgroundService {
   public void orderBackgrounds(Long gameId, Position from, Position to, boolean isAscending) {
 
     List<Background> backgrounds = backgroundRepository.getBackgroundsBetween(gameId, from, to);
+    List<Position> positions =
+        backgrounds.stream().map(Background::getLocation).collect(Collectors.toList());
+    positions.sort(Comparator.comparing(Position::getRow).thenComparing(Position::getCol));
+
+    if (isAscending) {
+      backgrounds.sort(Comparator.comparing(Background::getValue));
+    } else {
+      backgrounds.sort(Comparator.comparing(Background::getValue).reversed());
+    }
 
     for (int i = 0; i < backgrounds.size(); i++) {
-      for (int j = 0; j < backgrounds.size() - 1 - i; j++) {
-
-        Background leftBackground = backgrounds.get(j);
-        Background rightBackground = backgrounds.get(j + 1);
-
-        boolean isSwapping =
-            (isAscending) ? (leftBackground.getValue() > rightBackground.getValue())
-                : (leftBackground.getValue() < rightBackground.getValue());
-
-        if (isSwapping) {
-
-          Position temp = leftBackground.getLocation();
-          leftBackground.setLocation(rightBackground.getLocation());
-          rightBackground.setLocation(temp);
-        }
-      }
+      backgrounds.get(i).setLocation(positions.get(i));
     }
 
     goRepo.save(backgrounds);

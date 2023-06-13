@@ -1,3 +1,5 @@
+import './Input.css';
+
 function SetHeroPick(props) {
 
     function onChange(event) {
@@ -6,7 +8,7 @@ function SetHeroPick(props) {
 
     return (
         <>
-            <h3>Pick hero:</h3>
+            <h3 class='heading'>Pick hero:</h3>
 
             {!props.game.gnomeUsed && <>
             <input type='radio' id='gnome' name='heroPick' value="1" onChange={onChange} />

@@ -1,4 +1,5 @@
 import { useNavigate } from "@solidjs/router";
+import './Welcome.css';
 
 function Welcome() {
 
@@ -12,9 +13,9 @@ function Welcome() {
     }
 
     return (
-        <div>
-            <h1>Welcome to Heroic Trio</h1>
-            <button onClick={startNewGame}>Start New Game</button>
+        <div class='welcome-container'>
+            <h1 class='welcome-heading'>Welcome to Heroic Trio</h1>
+            <button class='start-button' onClick={startNewGame}>Start New Game</button>
         </div>
     );
 }

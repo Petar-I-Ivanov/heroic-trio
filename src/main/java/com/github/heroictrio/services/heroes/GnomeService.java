@@ -18,6 +18,10 @@ public class GnomeService {
     this.terrainService = terrainService;
   }
 
+  public boolean isGnomeAtPosition(Long gameId, Position position) {
+    return goRepo.findByGameIdAndPosition(gameId, position, Gnome.class) != null;
+  }
+
   public void setGnomeUsed(Long gameId) {
     Gnome gnome = goRepo.findSingleByGameId(gameId, Gnome.class);
     gnome.setUsedThisTurn(true);

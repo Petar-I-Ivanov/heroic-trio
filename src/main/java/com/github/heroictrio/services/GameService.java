@@ -1,6 +1,7 @@
 package com.github.heroictrio.services;
 
 import com.github.heroictrio.models.Game;
+import com.github.heroictrio.models.GameStatusEnum;
 import com.github.heroictrio.models.gameboard.GameboardObject;
 import com.github.heroictrio.repositories.GameRepository;
 import com.github.heroictrio.repositories.GameboardObjectRepository;
@@ -58,6 +59,13 @@ public class GameService {
       heroesService.newTurn(gameId);
     }
 
+    if (isGameWon(game) || isGameLost(game)) {
+
+      GameStatusEnum status = (isGameWon(game)) ? GameStatusEnum.WON : GameStatusEnum.LOST;
+      game.setStatus(status);
+      gameRepository.save(game);
+    }
+
     return game;
   }
 
@@ -102,5 +110,16 @@ public class GameService {
 
     return heroesService.isDwarfUsed(gameId) && heroesService.isGnomeUsed(gameId)
         && heroesService.isWizardUsed(gameId);
+  }
+
+  private boolean isGameWon(Game game) {
+
+    return !Constants.BOSS_POSITIONS.stream()
+        .filter(position -> heroesService.isHeroAtPosition(game.getId(), position)).toList()
+        .isEmpty();
+  }
+
+  private static boolean isGameLost(Game game) {
+    return game.getTurn() > 16;
   }
 }

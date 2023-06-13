@@ -1,4 +1,4 @@
-import { useNavigate, useParams } from "@solidjs/router";
+import { useParams } from "@solidjs/router";
 import { createEffect, createSignal } from "solid-js";
 
 import RenderGame from "./RenderGame";
@@ -7,7 +7,6 @@ import FormGame from "./game-form/FormGame";
 function Game() {
 
     const { gameId } = useParams();
-    const navigate = useNavigate();
 
     const [game, setGame] = createSignal({
         status: '',
@@ -24,17 +23,13 @@ function Game() {
         };
 
         fetchGame();
-    }, [gameId])
+    }, [gameId]);
 
-    if (game().status === 'WON' || game().status === 'LOST') {
-        navigate(`/result/${gameId}`);
-    }
-    
     return (
-        <div style='display:flex'>
+        <div style='display:flex; justify-content: center; align-items: center; height: 100vh;'>
+            {/* <h1>Turn: {game().turn}</h1> */}
             <RenderGame game={game()} />
             <FormGame game={game()} setGame={setGame} gameId={gameId} />
-            <h1>Turn: {game().turn}</h1>
         </div>
     );
 }

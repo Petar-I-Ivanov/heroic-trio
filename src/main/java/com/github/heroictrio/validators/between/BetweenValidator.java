@@ -17,7 +17,6 @@ public class BetweenValidator implements ConstraintValidator<Between, Byte> {
 
   @Override
   public boolean isValid(Byte value, ConstraintValidatorContext context) {
-    System.out.println(value);
     return (this.min <= value && this.max >= value) || isDefaultValue(value);
   }
 

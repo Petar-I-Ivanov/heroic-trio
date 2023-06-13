@@ -1,11 +1,10 @@
 import SetDirection from "../SetDirection";
+import '../Input.css';
 
 function SetMovementScenario(props) {
 
-    return(
-        <>
-        {!props.direction() && <SetDirection setDirection={props.setDirection} />}
-        </>
+    return (
+        <SetDirection setDirection={props.setDirection} />
     );
 }
 

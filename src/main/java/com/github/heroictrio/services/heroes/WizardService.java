@@ -17,6 +17,10 @@ public class WizardService {
     this.terrainService = terrainService;
   }
 
+  public boolean isWizardAtPosition(Long gameId, Position position) {
+    return goRepo.findByGameIdAndPosition(gameId, position, Wizard.class) != null;
+  }
+
   public void setWizardUsed(Long gameId) {
     Wizard wizard = goRepo.findSingleByGameId(gameId, Wizard.class);
     wizard.setUsedThisTurn(true);
@@ -35,8 +39,10 @@ public class WizardService {
 
     if (isNextPositionBackgroundAndValid(gameId, wizard.getLastValue(), position)) {
 
+      short value = (short) terrainService.getBackgroundValueAt(gameId, position);
       terrainService.removeBackgroundAt(gameId, position);
       wizard.setLocation(position);
+      wizard.setLastValue(value);
       goRepo.save(wizard);
       return;
     }
@@ -49,7 +55,7 @@ public class WizardService {
       return;
     }
 
-    throw new IllegalArgumentException("Next value isn't proggresive even!");
+    throw new IllegalArgumentException("Next value isn't decreasing or boss!");
   }
 
   public void ability(Long gameId, Position fromPosition, Position toPosition,

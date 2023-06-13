@@ -1,12 +1,14 @@
 import SetDirection from "../SetDirection";
 import SetNumberOfSquares from "../SetNumberOfSquares";
 
+import '../Input.css';
+
 function SetGnomeAbilityScenario(props) {
 
     return (
         <>
-            {!props.direction() && <SetDirection setDirection={props.setDirection} />}
-            {props.numberOfSquares() === -1 && <SetNumberOfSquares setNumberOfSquares={props.setNumberOfSquares} />}
+            <SetDirection setDirection={props.setDirection} />
+            <SetNumberOfSquares setNumberOfSquares={props.setNumberOfSquares} />
         </>
     );
 }

@@ -1,5 +1,6 @@
 import { Router, Routes, Route } from '@solidjs/router';
 import Game from './Game';
+import Result from './Result';
 import Welcome from './Welcome';
 
 function App() {
@@ -9,6 +10,7 @@ function App() {
         <Routes>
             <Route path='/' component={Welcome} />
             <Route path='/game/:gameId' component={Game} />
+            <Route path='/result/:gameId' component={Result} />
         </Routes>
     </Router>
 );

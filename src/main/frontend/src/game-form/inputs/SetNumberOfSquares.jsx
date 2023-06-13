@@ -6,7 +6,7 @@ function SetNumberOfSquares(props) {
 
     return (
         <>
-            <h3>Pick Number Of Squares:</h3>
+            <h3 class='heading'>Pick Number Of Squares:</h3>
 
             <input type='radio' id='twoSquares' name='numberOfSquares' value={2} onChange={onChange} />
             <label for='twoSquares'>Two squares</label>
