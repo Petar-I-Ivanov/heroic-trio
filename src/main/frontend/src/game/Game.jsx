@@ -2,7 +2,9 @@ import { useParams } from "@solidjs/router";
 import { createEffect, createSignal } from "solid-js";
 
 import RenderGame from "./RenderGame";
-import FormGame from "./game-form/FormGame";
+import FormGame from "./action-form/FormGame";
+
+import './Game.css';
 
 function Game() {
 
@@ -26,10 +28,13 @@ function Game() {
     }, [gameId]);
 
     return (
-        <div style='display:flex; justify-content: center; align-items: center; height: 100vh;'>
-            {/* <h1>Turn: {game().turn}</h1> */}
-            <RenderGame game={game()} />
-            <FormGame game={game()} setGame={setGame} gameId={gameId} />
+        <div class='game-container'>
+            <h1 class='turn-heading'>Turn: {game().turn}</h1>
+
+            <div class='content-wrapper'>
+                <div class='table-wrapper'><RenderGame game={game()} /></div>
+                <div class='form-wrapper'><FormGame game={game()} setGame={setGame} gameId={gameId} /></div>
+            </div>
         </div>
     );
 }

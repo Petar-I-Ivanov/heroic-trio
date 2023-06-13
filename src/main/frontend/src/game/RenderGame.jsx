@@ -1,9 +1,9 @@
-import GImage from './assets/gnome.jpg';
-import DImage from './assets/dwarf.jpg';
-import WImage from './assets/wizard.jpg';
+import GImage from '../assets/game-images/gnome.jpg'
+import DImage from '../assets/game-images/dwarf.jpg';
+import WImage from '../assets/game-images/wizard.jpg';
 
-import EImage from './assets/empty.jpg';
-import XImage from './assets/boss.jpg';
+import EImage from '../assets/game-images/empty.jpg';
+import XImage from '../assets/game-images/boss.jpg';
 
 import './RenderGame.css';
 

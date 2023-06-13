@@ -1,6 +1,6 @@
-import SetCol from "../SetCol";
-import SetRow from "../SetRow";
-import SetSortType from "../SetSortType";
+import SetCol from '../SetCol';
+import SetRow from '../SetRow';
+import SetSortType from '../SetSortType';
 
 import '../Input.css';
 

@@ -1,6 +1,8 @@
 import { useNavigate, useParams } from "@solidjs/router";
 import { createEffect, createSignal } from "solid-js";
 
+import './WelcomeResult.css';
+
 function Result() {
 
     const { gameId } = useParams();
@@ -34,10 +36,11 @@ function Result() {
     }
 
     return (
-        <div>
-            <h1>You {game().status} the game in {game().turn} turns!</h1>
-            <button onClick={goBack}>Go Back</button>
-            <button onClick={startNewGame}>Start New Game</button>
+        <div class='result-container'>
+            <h1 class='result-heading'>You <span class='span-info'>{game().status}</span> the game in <span class='span-info'>{game().turn}</span> turns!</h1>
+
+            <button class='start-button' onClick={goBack}>Go Back</button>
+            <button class='start-button' onClick={startNewGame}>Start New Game</button>
         </div>
     );
 }

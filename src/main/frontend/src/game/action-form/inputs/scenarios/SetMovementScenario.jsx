@@ -1,4 +1,4 @@
-import SetDirection from "../SetDirection";
+import SetDirection from '../SetDirection';
 import '../Input.css';
 
 function SetMovementScenario(props) {

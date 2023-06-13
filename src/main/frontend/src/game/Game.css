@@ -1,0 +1,36 @@
+.game-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+}
+
+.turn-heading {
+    text-align: center;
+}
+
+.content-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 20px;
+}
+
+.table-wrapper {
+    flex-grow: 1;
+}
+
+.form-wrapper {
+    flex-shrink: 0;
+    width: 300px;
+}
+
+.form-wrapper,
+.table-wrapper {
+    flex: 1;
+}
+
+.form-wrapper {
+    text-align: center;
+}

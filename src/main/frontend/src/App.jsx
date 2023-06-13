@@ -1,5 +1,5 @@
 import { Router, Routes, Route } from '@solidjs/router';
-import Game from './Game';
+import Game from './game/Game';
 import Result from './Result';
 import Welcome from './Welcome';
 

@@ -1,5 +1,5 @@
-import SetCol from "../SetCol";
-import SetRow from "../SetRow";
+import SetCol from '../SetCol';
+import SetRow from '../SetRow';
 
 import '../Input.css';
 

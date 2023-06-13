@@ -1,5 +1,5 @@
 import { useNavigate } from "@solidjs/router";
-import './Welcome.css';
+import './WelcomeResult.css';
 
 function Welcome() {
 

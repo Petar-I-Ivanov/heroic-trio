@@ -3,12 +3,14 @@ body {
     font-family: Arial, sans-serif;
 }
 
-.welcome-container {
+.welcome-container,
+.result-container {
     text-align: center;
     padding: 50px;
 }
 
-.welcome-heading {
+.welcome-heading,
+.result-heading {
     font-size: 36px;
     color: #333;
     margin-bottom: 20px;

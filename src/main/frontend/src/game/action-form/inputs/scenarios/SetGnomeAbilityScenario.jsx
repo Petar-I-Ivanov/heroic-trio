@@ -1,5 +1,5 @@
-import SetDirection from "../SetDirection";
-import SetNumberOfSquares from "../SetNumberOfSquares";
+import SetDirection from '../SetDirection';
+import SetNumberOfSquares from '../SetNumberOfSquares';
 
 import '../Input.css';
 
