@@ -4,6 +4,7 @@ import com.github.heroictrio.models.gameboard.terrain.Background;
 import com.github.heroictrio.utilities.Position;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.Query;
 import jakarta.persistence.TypedQuery;
 import java.util.List;
 
@@ -16,14 +17,14 @@ public class AdditionalBackgroundRepository {
     this.entityManager = entityManager;
   }
 
-  public Background getHighestBackground(Long gameId) {
+  public int getHighestValueForGameId(Long gameId) {
 
-    String queryString = "SELECT b FROM Background b WHERE b.game.id = :gameId ORDER BY b.id DESC";
-    TypedQuery<Background> query = entityManager.createQuery(queryString, Background.class);
+    String queryString =
+        "SELECT MAX(CAST(b.sign AS INTEGER)) FROM Background b WHERE b.game.id = :gameId";
+    Query query = entityManager.createQuery(queryString);
     query.setParameter("gameId", gameId);
-    query.setMaxResults(1);
 
-    return query.getSingleResult();
+    return (Integer) query.getSingleResult();
   }
 
   public List<Background> getBackgroundsBetween(Long gameId, Position from, Position to) {

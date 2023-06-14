@@ -40,8 +40,7 @@ function FormGame(props) {
             numberOfSquares: numberOfSquares(), sortType: sortType()
         }
 
-        setHeroPick(); setAction(); setDirection(); setRowOne(-1); setColOne(-1);
-        setRowTwo(-1); setColTwo(-1); setNumberOfSquares(-1); setSortType();
+        resetInputs();
 
         const response = await fetch(`http://localhost:8080/game/${props.gameId}`, {
             method: 'PUT',
@@ -50,6 +49,12 @@ function FormGame(props) {
         });
 
         if (response.status !== 200) {
+
+            if (response.status === 400) {
+                setError('Invalid input!');
+                return;
+            }
+
             const text = await response.text();
             setError(text);
             return;
@@ -57,7 +62,6 @@ function FormGame(props) {
 
         const json = await response.json();
 
-        console.log(json.status);
         if (json.status === 'WON' || json.status === 'LOST') {
             navigate(`/result/${json.id}`);
         }
@@ -66,18 +70,23 @@ function FormGame(props) {
         setError();
     }
 
+    function resetInputs() {
+        setHeroPick(); setAction(); setDirection(); setRowOne(-1); setColOne(-1);
+        setRowTwo(-1); setColTwo(-1); setNumberOfSquares(-1); setSortType();
+    }
+
     function isMovementScenario() {
         return action() === 'movement' && heroPick();
     }
-    
+
     function isGnomeAbilityScenario() {
         return action() === 'ability' && heroPick() === '1';
     }
-    
+
     function isDwarfAbilityScenario() {
         return action() === 'ability' && heroPick() === '2';
     }
-    
+
     function isWizardAbilityScenario() {
         return action() === 'ability' && heroPick() === '3';
     }
@@ -139,25 +148,29 @@ function FormGame(props) {
     }
 
     return (
-        <form class='form' onSubmit={makeAction}>
+        <>
+            <form class='form' onSubmit={makeAction}>
 
-            {!heroPick() && <SetHeroPick game={props.game} setHeroPick={setHeroPick} />}
-            {!action() && <SetAction setAction={setAction} />}
+                {!heroPick() && <SetHeroPick game={props.game} setHeroPick={setHeroPick} />}
+                {!action() && <SetAction setAction={setAction} />}
 
-            {isMovementScenarioAndNotFilled() && <SetMovementScenario setDirection={setDirection} />}
+                {isMovementScenarioAndNotFilled() && <SetMovementScenario setDirection={setDirection} />}
 
-            {isGnomeAbilityScenarioAndNotFilled() && <SetGnomeAbilityScenario setDirection={setDirection} setNumberOfSquares={setNumberOfSquares} />}
+                {isGnomeAbilityScenarioAndNotFilled() && <SetGnomeAbilityScenario setDirection={setDirection} setNumberOfSquares={setNumberOfSquares} />}
 
-            {isDwarfAbilityScenarioAndNotFilled() && <SetDwarfAbilityScenario setRowOne={setRowOne} setColOne={setColOne}
-            setRowTwo={setRowTwo} setColTwo={setColTwo} />}
+                {isDwarfAbilityScenarioAndNotFilled() && <SetDwarfAbilityScenario setRowOne={setRowOne} setColOne={setColOne}
+                    setRowTwo={setRowTwo} setColTwo={setColTwo} />}
 
-            {isWizardAbilityScenarioAndNotFilled() && <SetWizardAbilityScenario setRowOne={setRowOne} setColOne={setColOne}
-            setRowTwo={setRowTwo} setColTwo={setColTwo} setSortType={setSortType} />}
+                {isWizardAbilityScenarioAndNotFilled() && <SetWizardAbilityScenario setRowOne={setRowOne} setColOne={setColOne}
+                    setRowTwo={setRowTwo} setColTwo={setColTwo} setSortType={setSortType} />}
 
-            
-            {error() && <p class='error-message'>{error()}</p>}
-            {isAnyScenarioAvailable() && <button class='submit-button' type='submit'>Submit</button>}
-        </form>
+
+                {error() && <p class='error-message'>{error()}</p>}
+                {isAnyScenarioAvailable() && <button class='submit-button' type='submit'>Submit</button>}
+            </form>
+
+            <button class='submit-button' onClick={resetInputs}>Reset Inputs</button>
+        </>
     );
 }
 

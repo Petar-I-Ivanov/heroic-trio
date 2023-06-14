@@ -31,10 +31,7 @@ public class GnomeService {
   public void move(Long gameId, char direction) {
 
     Gnome gnome = goRepo.findSingleByGameId(gameId, Gnome.class);
-
-    if (gnome.isUsedThisTurn()) {
-      throw new IllegalArgumentException("This unit is used already!");
-    }
+    HeroesService.heroUsedValidation(gnome);
 
     Position position = Position.getNewPositionFromDirection(gnome.getLocation(), direction);
 
@@ -61,10 +58,7 @@ public class GnomeService {
 
     Long gameId = game.getId();
     Gnome gnome = goRepo.findSingleByGameId(gameId, Gnome.class);
-
-    if (gnome.isUsedThisTurn()) {
-      throw new IllegalArgumentException("This unit is used already!");
-    }
+    HeroesService.heroUsedValidation(gnome);
 
     Position gnomePosition = gnome.getLocation();
     int sum = getSum(gameId, gnomePosition, direction, numberOfSquares);

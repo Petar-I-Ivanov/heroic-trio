@@ -29,7 +29,7 @@ public class GameApi {
 
   @GET
   @Path("/{gameId}")
-  public Response getGame(@PathParam("gameId") Long gameId) {
+  public Response getGame(@PathParam("gameId") String gameId) {
 
     try {
       return Response.status(Status.OK).entity(mappingService.getGameById(gameId)).build();
@@ -62,7 +62,7 @@ public class GameApi {
 
   @PUT
   @Path("/{gameId}")
-  public Response makeAction(@PathParam("gameId") Long gameId, @Valid Input input) {
+  public Response makeAction(@PathParam("gameId") String gameId, @Valid Input input) {
 
     try {
       return Response.status(Status.OK).entity(mappingService.makeAction(gameId, input)).build();

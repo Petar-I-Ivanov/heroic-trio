@@ -17,13 +17,13 @@
 }
 
 .table td img {
-    width: 25px;
-    height: 25px;
+    width: 50px;
+    height: 50px;
 }
 
 .table td p {
-    width: 25px;
-    height: 25px;
+    width: 50px;
+    height: 50px;
     margin: 0;
-    line-height: 25px;
+    line-height: 50px;
 }

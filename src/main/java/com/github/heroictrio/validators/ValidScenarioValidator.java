@@ -12,7 +12,12 @@ public class ValidScenarioValidator implements ConstraintValidator<ValidScenario
 
   @Override
   public boolean isValid(Input input, ConstraintValidatorContext context) {
-    return isAnyScenarioAvailable(input);
+
+    try {
+      return isAnyScenarioAvailable(input);
+    } catch (Exception e) {
+      return false;
+    }
   }
 
   private static boolean isAnyScenarioAvailable(Input input) {

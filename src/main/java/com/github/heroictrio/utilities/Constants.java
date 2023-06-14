@@ -22,6 +22,7 @@ public class Constants {
   public static final char GNOME_PICK = '1';
   public static final char DWARF_PICK = '2';
   public static final char WIZARD_PICK = '3';
+  public static final String MOVEMENT = "movement";
 
   public static final List<Position> BOSS_POSITIONS =
       Arrays.asList(new Position(5, 8), new Position(5, 9), new Position(6, 8), new Position(6, 9));

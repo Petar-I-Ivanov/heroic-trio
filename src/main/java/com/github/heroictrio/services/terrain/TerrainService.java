@@ -56,8 +56,9 @@ public class TerrainService {
     backgroundService.switchTwoBackgrounds(gameId, positionOne, positionTwo);
   }
 
-  public void orderBackgrounds(Long gameId, Position from, Position to, boolean isAscending) {
-    backgroundService.orderBackgrounds(gameId, from, to, isAscending);
+  public void orderBackgrounds(Long gameId, Position from, Position to, boolean isAscending,
+      boolean arePositionsSwitched) {
+    backgroundService.orderBackgrounds(gameId, from, to, isAscending, arePositionsSwitched);
   }
 
   public void removeBackgroundAt(Long gameId, Position position) {

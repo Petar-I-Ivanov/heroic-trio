@@ -3,6 +3,7 @@ package com.github.heroictrio.services.heroes;
 import com.github.heroictrio.models.Game;
 import com.github.heroictrio.models.gameboard.heroes.Dwarf;
 import com.github.heroictrio.models.gameboard.heroes.Gnome;
+import com.github.heroictrio.models.gameboard.heroes.Hero;
 import com.github.heroictrio.models.gameboard.heroes.Wizard;
 import com.github.heroictrio.repositories.GameboardObjectRepository;
 import com.github.heroictrio.services.RandomGeneratorService;
@@ -89,7 +90,7 @@ public class HeroesService {
 
   public void handleAction(Game game, Input input) {
 
-    boolean isMovement = input.getAction().equals("movement");
+    boolean isMovement = input.getAction().equals(Constants.MOVEMENT);
 
     if (isMovement) {
       move(game.getId(), input);
@@ -97,6 +98,13 @@ public class HeroesService {
     }
 
     ability(game, input);
+  }
+
+  public static void heroUsedValidation(Hero hero) {
+
+    if (hero.isUsedThisTurn()) {
+      throw new IllegalArgumentException("This hero is used already this turn!");
+    }
   }
 
   private void move(Long gameId, Input input) {
@@ -119,7 +127,7 @@ public class HeroesService {
         wizardService.setWizardUsed(gameId);
       }
 
-      default -> throw new IllegalArgumentException("Unexpected value: " + heroPick);
+      default -> throw new IllegalArgumentException("Unexpected value for heroPick: " + heroPick);
     }
   }
 
@@ -129,27 +137,25 @@ public class HeroesService {
 
     switch (heroPick) {
 
-      case Constants.GNOME_PICK: {
+      case Constants.GNOME_PICK -> {
 
         char direction = input.getDirection().charAt(0);
         byte numberOfSquares = input.getNumberOfSquares();
 
         gnomeService.ability(game, direction, numberOfSquares);
         gnomeService.setGnomeUsed(game.getId());
-        break;
       }
 
-      case Constants.DWARF_PICK: {
+      case Constants.DWARF_PICK -> {
 
         Position positionOne = new Position(input.getRowOne(), input.getColOne());
         Position positionTwo = new Position(input.getRowTwo(), input.getColTwo());
 
         dwarfService.ability(game.getId(), positionOne, positionTwo);
         dwarfService.setDwarfUsed(game.getId());
-        break;
       }
 
-      case Constants.WIZARD_PICK: {
+      case Constants.WIZARD_PICK -> {
 
         Position positionOne = new Position(input.getRowOne(), input.getColOne());
         Position positionTwo = new Position(input.getRowTwo(), input.getColTwo());
@@ -157,11 +163,9 @@ public class HeroesService {
 
         wizardService.ability(game.getId(), positionOne, positionTwo, isAscending);
         wizardService.setWizardUsed(game.getId());
-        break;
       }
 
-      default:
-        throw new IllegalArgumentException("Unexpected value: " + heroPick);
+      default -> throw new IllegalArgumentException("Unexpected value for heroPick: " + heroPick);
     }
   }
 }

@@ -6,6 +6,7 @@ import com.github.heroictrio.services.terrain.TerrainService;
 import com.github.heroictrio.utilities.Position;
 import jakarta.enterprise.context.ApplicationScoped;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 @ApplicationScoped
@@ -33,10 +34,7 @@ public class DwarfService {
   public void move(Long gameId, char direction) {
 
     Dwarf dwarf = goRepo.findSingleByGameId(gameId, Dwarf.class);
-
-    if (dwarf.isUsedThisTurn()) {
-      throw new IllegalArgumentException("This unit is used already!");
-    }
+    HeroesService.heroUsedValidation(dwarf);
 
     Position position = Position.getNewPositionFromDirection(dwarf.getLocation(), direction);
 
@@ -62,14 +60,11 @@ public class DwarfService {
   public void ability(Long gameId, Position positionOne, Position positionTwo) {
 
     Dwarf dwarf = goRepo.findSingleByGameId(gameId, Dwarf.class);
-
-    if (dwarf.isUsedThisTurn()) {
-      throw new IllegalArgumentException("This unit is used already!");
-    }
+    HeroesService.heroUsedValidation(dwarf);
 
     List<Position> workingField = getWorkingField(dwarf, positionOne);
 
-    if (workingField != null && workingField.contains(positionTwo)) {
+    if (!workingField.isEmpty() && workingField.contains(positionTwo)) {
       terrainService.switchTwoBackgrounds(gameId, positionOne, positionTwo);
       return;
     }
@@ -92,30 +87,26 @@ public class DwarfService {
     Position dwarfPosition = dwarf.getLocation();
 
     List<Position> workingField = getRightFieldValues(gameId, dwarfPosition);
-
     if (workingField.contains(position)) {
       return workingField;
     }
 
     workingField = getBottomFieldValues(gameId, dwarfPosition);
-
     if (workingField.contains(position)) {
       return workingField;
     }
 
     workingField = getLeftFieldValues(gameId, dwarfPosition);
-
     if (workingField.contains(position)) {
       return workingField;
     }
 
     workingField = getTopFieldValues(gameId, dwarfPosition);
-
     if (workingField.contains(position)) {
       return workingField;
     }
 
-    return null;
+    return Collections.emptyList();
   }
 
   private List<Position> getRightFieldValues(Long gameId, Position dwarfPosition) {
@@ -145,7 +136,7 @@ public class DwarfService {
 
         Position position = new Position(row, col);
 
-        if (terrainService.isPositionBackground(gameId, startingPosition)) {
+        if (terrainService.isPositionBackground(gameId, position)) {
           squareValues.add(position);
         }
       }

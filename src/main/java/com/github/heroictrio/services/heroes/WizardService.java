@@ -30,10 +30,7 @@ public class WizardService {
   public void move(Long gameId, char direction) {
 
     Wizard wizard = goRepo.findSingleByGameId(gameId, Wizard.class);
-
-    if (wizard.isUsedThisTurn()) {
-      throw new IllegalArgumentException("This unit is used already!");
-    }
+    HeroesService.heroUsedValidation(wizard);
 
     Position position = Position.getNewPositionFromDirection(wizard.getLocation(), direction);
 
@@ -62,21 +59,23 @@ public class WizardService {
       boolean isAscending) {
 
     Wizard wizard = goRepo.findSingleByGameId(gameId, Wizard.class);
-
-    if (wizard.isUsedThisTurn()) {
-      throw new IllegalArgumentException("This unit is used already!");
-    }
+    HeroesService.heroUsedValidation(wizard);
 
     if (Position.arePositionsInline(fromPosition, toPosition)) {
+
+      boolean arePositionsSwitched = false;
 
       if (shouldPositionsSwitch(fromPosition, toPosition)) {
 
         Position temp = fromPosition;
         fromPosition = toPosition;
         toPosition = temp;
+
+        arePositionsSwitched = true;
       }
 
-      terrainService.orderBackgrounds(gameId, fromPosition, toPosition, isAscending);
+      terrainService.orderBackgrounds(gameId, fromPosition, toPosition, isAscending,
+          arePositionsSwitched);
       return;
     }
 

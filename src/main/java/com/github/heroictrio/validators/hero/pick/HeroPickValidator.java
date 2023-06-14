@@ -12,7 +12,7 @@ public class HeroPickValidator implements ConstraintValidator<ValidHeroPick, Str
   @Override
   public boolean isValid(String heroPickValue, ConstraintValidatorContext context) {
 
-    if (heroPickValue.length() != 1) {
+    if (heroPickValue == null || heroPickValue.length() != 1) {
       return false;
     }
 
